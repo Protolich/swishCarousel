@@ -11,17 +11,16 @@
 
 /*
 	
-	Dependent on Modernizr & Underscore
+	Dependent on Modernizr
 
 
 	Version: 1.0: 	Initial build
 	Version: 1.1:	Added looping functionality 
 					Based on code from
 					Stéphane Roucheray - http://sroucheray.org/	
-	Version: 1.2: 	
+	Version: 1.2: 	Removed Underscore dependency
+					Fixed Fade z-index bug
 */
-
-// if(!Window.Modernizr) var Modernizr = {}; Modernizr.csstransitions = false;
 
 (function ($) {
 
@@ -341,6 +340,9 @@
 							// if (index < base.data.currentItem) - moving backward
 							if (index === base.data.options.startPosition - 1)
 							{
+								console.log('first');
+								base.data.items.removeAttr('style').removeClass('animate-in animate-out');
+								base.data.items.eq(index).addClass();
 								// First item in the carousel
 							}
 							else if (index > base.data.currentItem)
