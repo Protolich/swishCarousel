@@ -55,34 +55,21 @@
 					// Setup button objects
 
 					base.data.buttons = [];
-					if (typeof (base.data.options.buttonNext) === "function") base.data.$buttonNext = base.data.options.buttonNext(base);
-					else if (base.data.options.buttonNext !== -1) base.data.$buttonNext = $(base.data.options.buttonNext);
+					base.data.$buttonNext = setupButton(base.data.options.buttonNext);
+					base.data.$buttonPrev = setupButton(base.data.options.buttonPrev);
+					base.data.$buttonFirst = setupButton(base.data.options.buttonFirst);
+					base.data.$buttonLast = setupButton(base.data.options.buttonLast);
+					base.data.$buttonPlay = setupButton(base.data.options.buttonPlay);
+					base.data.$buttonPause = setupButton(base.data.options.buttonPause);
+					base.data.$buttonStop = setupButton(base.data.options.buttonStop);
 
-					if (typeof (base.data.options.buttonPrev) === "function") base.data.$buttonPrev = base.data.options.buttonPrev(base);
-					else if (base.data.options.buttonPrev !== -1) base.data.$buttonPrev = $(base.data.options.buttonPrev);
+					function setupButton(btn) {
+						var _btn;
+						if (typeof (btn) === "function") _btn = btn(base);
+						else if (btn !== -1) _btn = $(btn);
+						return _btn;
+					}
 
-					if (typeof (base.data.options.buttonFirst) === "function") base.data.$buttonFirst = base.data.options.buttonFirst(base);
-					else if (base.data.options.buttonFirst !== -1) base.data.$buttonFirst = $(base.data.options.buttonFirst);
-
-					if (typeof (base.data.options.buttonLast) === "function") base.data.$buttonLast = base.data.options.buttonLast(base);
-					else if (base.data.options.buttonLast !== -1) base.data.$buttonLast = $(base.data.options.buttonLast);
-
-					if (typeof (base.data.options.buttonPlay) === "function") base.data.$buttonPlay = base.data.options.buttonPlay(base);
-					else if (base.data.options.buttonPlay !== -1) base.data.$buttonPlay = $(base.data.options.buttonPlay);
-
-					if (typeof (base.data.options.buttonPause) === "function") base.data.$buttonPause = base.data.options.buttonPause(base);
-					else if (base.data.options.buttonPause !== -1) base.data.$buttonPause = $(base.data.options.buttonPause);
-
-					if (typeof (base.data.options.buttonStop) === "function") base.data.$buttonStop = base.data.options.buttonStop(base);
-					else if (base.data.options.buttonStop !== -1) base.data.$buttonStop = $(base.data.options.buttonStop);
-
-					/*base.data.buttons.push(base.data.$buttonNext);
-					base.data.buttons.push(base.data.$buttonPrev);
-					base.data.buttons.push(base.data.$buttonFirst);
-					base.data.buttons.push(base.data.$buttonLast);
-					base.data.buttons.push(base.data.$buttonPlay);
-					base.data.buttons.push(base.data.$buttonPause);
-					base.data.buttons.push(base.data.$buttonStop);*/
 
 					//
 					base.data.pause = false;
