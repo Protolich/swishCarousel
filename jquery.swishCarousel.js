@@ -53,8 +53,13 @@
 					base.data.currentItem = base.data.options.startPosition - 1;
 
 					// Setup button objects
+					function setupButton(btn) {
+						var _btn;
+						if (typeof (btn) === "function") _btn = btn(base);
+						else if (btn !== -1) _btn = $(btn);
+						return _btn;
+					}
 
-					base.data.buttons = [];
 					base.data.$buttonNext = setupButton(base.data.options.buttonNext);
 					base.data.$buttonPrev = setupButton(base.data.options.buttonPrev);
 					base.data.$buttonFirst = setupButton(base.data.options.buttonFirst);
@@ -62,13 +67,6 @@
 					base.data.$buttonPlay = setupButton(base.data.options.buttonPlay);
 					base.data.$buttonPause = setupButton(base.data.options.buttonPause);
 					base.data.$buttonStop = setupButton(base.data.options.buttonStop);
-
-					function setupButton(btn) {
-						var _btn;
-						if (typeof (btn) === "function") _btn = btn(base);
-						else if (btn !== -1) _btn = $(btn);
-						return _btn;
-					}
 
 
 					//
@@ -111,6 +109,11 @@
 						base.$el.width(base.data.length * base.data.items.outerWidth(true));
 						base.$el.css({ left: -((base.data.options.startPosition - 1) * base.data.items.outerWidth()) });
 						break;
+					case 'class':
+						// This is for just adding / removing classes
+						// Mainly for use with CSS based transitions
+
+					break;
 				}
 				base.$el.addClass('swishCarousel');
 
@@ -164,8 +167,6 @@
 					base.$el.after(base.data.$timer);
 				}
 
-
-
 				// If set to autostart begin the interval
 				if (base.data.options.autoStart) {
 					if (base.data.options.timer) $('.inner', base.data.$timer).stop().css({ width: 'auto' }).animate({ width: 0 }, base.data.options.delay, 'linear');
@@ -176,26 +177,42 @@
 					}, base.data.options.delay);
 				}
 
-				$(base.data.options.buttonPause).bind("click.swishCarousel", function (e) { e.preventDefault(); base.$el.swishCarousel("pause"); });
-				$(base.data.options.buttonPlay).bind("click.swishCarousel", function (e) { e.preventDefault(); base.$el.swishCarousel("play"); });
-
-				$(base.data.options.buttonStop).bind("click.swishCarousel", function (e) { e.preventDefault(); base.$el.swishCarousel("stop"); });
-				$(base.data.options.buttonFirst).bind("click.swishCarousel", function (e) {
+				base.data.$buttonPause.bind("click.swishCarousel", function (e) {
+					e.preventDefault();
+					base.$el.swishCarousel("pause");
+				});
+				
+				base.data.$buttonPlay.bind("click.swishCarousel", function (e) {
+					e.preventDefault();
+					base.$el.swishCarousel("play"); 
+				});
+				
+				base.data.$buttonStop.bind("click.swishCarousel", function (e) { 
+					e.preventDefault();
+					base.$el.swishCarousel("stop"); 
+				});
+				
+				base.data.$buttonFirst.bind("click.swishCarousel", function (e) {
 					e.preventDefault();
 					base.$el.swishCarousel("goTo", "first").swishCarousel(base.data.options.onAction);
 				});
-				$(base.data.options.buttonPrev).bind("click.swishCarousel", function (e) {
+				
+				base.data.$buttonPrev.bind("click.swishCarousel", function (e) {
 					e.preventDefault();
 					base.$el.swishCarousel("goTo", "previous").swishCarousel(base.data.options.onAction);
 				});
-				$(base.data.options.buttonNext).bind("click.swishCarousel", function (e) {
+				
+				base.data.$buttonNext.bind("click.swishCarousel", function (e) {
 					e.preventDefault();
 					base.$el.swishCarousel("goTo", "next").swishCarousel(base.data.options.onAction);
 				});
-				$(base.data.options.buttonLast).bind("click.swishCarousel", function (e) {
+
+				base.data.$buttonLast.bind("click.swishCarousel", function (e) {
 					e.preventDefault();
 					base.$el.swishCarousel("goTo", "last").swishCarousel(base.data.options.onAction);
 				});
+
+
 
 				if (base.data.length < base.data.options.startPosition) {
 					$(base.data.options.buttonNext).remove();
@@ -248,7 +265,9 @@
 		goTo: function (index) {
 			return this.each(function () {
 				var base = $.fn.swishCarousel.setupData(this);
+				var keyword = null;
 				if (typeof(index) === "string") {
+					keyword = index;
 					// Go to keyword (first/last/prev/next)
 					// Store which button was clicked
 					var btnClicked = "none";
@@ -285,8 +304,8 @@
 							else base.$el.stop().animate({ left: -(index * base.data.items.outerWidth(true)) }, base.data.options.animSpeed);
 							break;
 						case 'fade':
-							if (Modernizr.csstransitions) base.data.items.filter(':eq(' + index + ')').css({ opacity: 1, zIndex: 2 }).siblings().css({ opacity: 0, zIndex: 1 });
-							else base.data.items.filter(':eq(' + index + ')').animate({ opacity: 1, zIndex: 2 }, base.data.options.animSpeed).siblings().animate({ opacity: 0, zIndex: 1 }, base.data.options.animSpeed);
+							if (Modernizr.csstransitions) base.data.items.eq(index).css({ opacity: 1, zIndex: 2 }).siblings().css({ opacity: 0, zIndex: 1 });
+							else base.data.items.eq(index).animate({ opacity: 1, zIndex: 2 }, base.data.options.animSpeed).siblings().animate({ opacity: 0, zIndex: 1 }, base.data.options.animSpeed);
 							break;
 						case 'loop':
 
@@ -312,6 +331,33 @@
 							base.$el.stop().animate({ left: -(index * base.data.items.outerWidth(true)) }, base.data.options.animSpeed);
 
 							break;
+						case 'sequence':
+							// Notes -
+							// When moving to a slide it must add the class animate-in
+							// When moving past a slide it must remove animate-in and add animate-out
+							// When moving back past a slide it must remove all classes and add generic transition styling
+							// Test index against base.data.currentItem to test relative position of current and previous slides
+							// if (index > base.data.currentItem) - moving forward
+							// if (index < base.data.currentItem) - moving backward
+							if (index === base.data.options.startPosition - 1)
+							{
+								// First item in the carousel
+							}
+							else if (index > base.data.currentItem)
+							{
+								// Carousel is moving forwards
+								console.log('backwards');
+							}
+							else if (index < base.data.currentItem)
+							{
+								// Carousel is moving backwards
+								console.log('forwards')
+							}
+
+							base.data.items.eq(index).addClass('animate-in').removeClass('animate-out');
+							base.data.items.eq(base.data.currentItem).addClass('animate-out').removeClass('animate-in');
+							
+						break;
 					}
 					base.data.items.eq(index).addClass('active').siblings().removeClass('active');
 					if (base.data.options.pager) base.data.$pagerItems.eq(index).addClass('pagerActive').siblings().removeClass('pagerActive');
