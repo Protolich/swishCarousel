@@ -18,6 +18,7 @@
 	Version: 1.1:	Added looping functionality 
 					Based on code from
 					Stéphane Roucheray - http://sroucheray.org/	
+	Version: 1.2: 	
 */
 
 // if(!Window.Modernizr) var Modernizr = {}; Modernizr.csstransitions = false;
@@ -260,7 +261,7 @@
 		goTo: function (index) {
 			return this.each(function () {
 				var base = $.fn.swishCarousel.setupData(this);
-				if (_.isString(index)) {
+				if (typeof(index) === "string") {
 					// Go to keyword (first/last/prev/next)
 					// Store which button was clicked
 					var btnClicked = "none";
@@ -290,15 +291,15 @@
 					}
 				}
 
-				if (_.isNumber(index)) {
+				if (!isNaN(index)) {
 					switch (base.data.options.animation) {
 						case 'slide':
 							if (Modernizr.csstransitions) base.$el.css({ left: -(index * base.data.items.outerWidth(true)) });
 							else base.$el.stop().animate({ left: -(index * base.data.items.outerWidth(true)) }, base.data.options.animSpeed);
 							break;
 						case 'fade':
-							if (Modernizr.csstransitions) base.data.items.filter(':eq(' + index + ')').css({ opacity: 1 }).siblings().css({ opacity: 0 });
-							else base.data.items.filter(':eq(' + index + ')').animate({ opacity: 1 }, base.data.options.animSpeed).siblings().animate({ opacity: 0 }, base.data.options.animSpeed);
+							if (Modernizr.csstransitions) base.data.items.filter(':eq(' + index + ')').css({ opacity: 1, zIndex: 2 }).siblings().css({ opacity: 0, zIndex: 1 });
+							else base.data.items.filter(':eq(' + index + ')').animate({ opacity: 1, zIndex: 2 }, base.data.options.animSpeed).siblings().animate({ opacity: 0, zIndex: 1 }, base.data.options.animSpeed);
 							break;
 						case 'loop':
 
