@@ -50,12 +50,17 @@
 					// Initially set variables
 					base.data.length = base.data.items.length;
 					base.data.currentItem = base.data.options.startPosition - 1;
+					base.data.lastItem = base.data.options.startPosition - 1;
 
 					// Setup button objects
 					function setupButton(btn) {
 						var _btn;
-						if (typeof (btn) === "function") _btn = btn(base);
-						else if (btn !== -1) _btn = $(btn);
+						if (typeof (btn) === "function")
+							_btn = btn(base);
+						else if (btn !== -1)
+							_btn = $(btn);
+						else
+							_btn = $(null); // Force function to return an empty jq object if unused.
 						return _btn;
 					}
 
@@ -108,10 +113,11 @@
 						base.$el.width(base.data.length * base.data.items.outerWidth(true));
 						base.$el.css({ left: -((base.data.options.startPosition - 1) * base.data.items.outerWidth()) });
 						break;
-					case 'class':
+					case 'sequence':
 						// This is for just adding / removing classes
 						// Mainly for use with CSS based transitions
-
+						base.data.items.children().addClass('animate-out');
+						base.data.items.eq(base.data.options.startPosition - 1).children().addClass('animate-in').removeClass('animate-out');
 					break;
 				}
 				base.$el.addClass('swishCarousel');
@@ -143,7 +149,9 @@
 					if (base.data.options.pagerAuto) {
 						// If the pager element is not a list container create a list container
 						var tag;
-						base.data.$pager.each(function () { tag = this.tagName; });
+						base.data.$pager.each(function () {
+							tag = this.tagName;
+						});
 						if (tag !== "UL" && tag !== "OL") {
 							base.data.$pager.append('<ol></ol>');
 							base.data.$pager = $('ol', base.data.$pager);
@@ -152,10 +160,12 @@
 						base.data.items.each(function (i, e) { base.data.$pager.append('<li>' + (i + 1) + '</li>') });
 					}
 					base.data.$pagerItems = $("li", base.data.$pager);
-					base.data.$pagerItems.each(function (i, e) { $(e).data("pagerIndex", i) }).click(function () {
+					base.data.$pagerItems.each(function (i, e) { $(e).data("pagerIndex", i) }).on('click.swishCarousel', function () {
 						base.$el.swishCarousel("goTo", $(this).data("pagerIndex")).swishCarousel(base.data.options.onAction);
 					});
-					$('a', base.data.$pager).click(function (e) { e.preventDefault() });
+					$('a', base.data.$pager).on('click.swishCarousel', function (e) {
+						e.preventDefault() 
+					});
 
 					// Create an update pager function?
 					base.data.$pagerItems.eq(base.data.options.startPosition - 1).addClass('pagerActive').siblings().removeClass('active');
@@ -168,45 +178,49 @@
 
 				// If set to autostart begin the interval
 				if (base.data.options.autoStart) {
-					if (base.data.options.timer) $('.inner', base.data.$timer).stop().css({ width: 'auto' }).animate({ width: 0 }, base.data.options.delay, 'linear');
+					if (base.data.options.timer)
+						$('.inner', base.data.$timer).stop().css({ width: 'auto' }).animate({ width: 0 }, base.data.options.delay, 'linear');
 
 					base.data.carouselTimer = setInterval(function () {
 						base.$el.swishCarousel("goTo", "next");
-						if (base.data.options.timer) $('.inner', base.data.$timer).stop().css({ width: 'auto' }).animate({ width: 0 }, base.data.options.delay, 'linear');
+						
+						if (base.data.options.timer)
+							$('.inner', base.data.$timer).stop().css({ width: 'auto' }).animate({ width: 0 }, base.data.options.delay, 'linear');
+					
 					}, base.data.options.delay);
 				}
 
-				base.data.$buttonPause.bind("click.swishCarousel", function (e) {
+				base.data.$buttonPause.on("click.swishCarousel", function (e) {
 					e.preventDefault();
 					base.$el.swishCarousel("pause");
 				});
 				
-				base.data.$buttonPlay.bind("click.swishCarousel", function (e) {
+				base.data.$buttonPlay.on("click.swishCarousel", function (e) {
 					e.preventDefault();
 					base.$el.swishCarousel("play"); 
 				});
 				
-				base.data.$buttonStop.bind("click.swishCarousel", function (e) { 
+				base.data.$buttonStop.on("click.swishCarousel", function (e) { 
 					e.preventDefault();
 					base.$el.swishCarousel("stop"); 
 				});
 				
-				base.data.$buttonFirst.bind("click.swishCarousel", function (e) {
+				base.data.$buttonFirst.on("click.swishCarousel", function (e) {
 					e.preventDefault();
 					base.$el.swishCarousel("goTo", "first").swishCarousel(base.data.options.onAction);
 				});
 				
-				base.data.$buttonPrev.bind("click.swishCarousel", function (e) {
+				base.data.$buttonPrev.on("click.swishCarousel", function (e) {
 					e.preventDefault();
 					base.$el.swishCarousel("goTo", "previous").swishCarousel(base.data.options.onAction);
 				});
 				
-				base.data.$buttonNext.bind("click.swishCarousel", function (e) {
+				base.data.$buttonNext.on("click.swishCarousel", function (e) {
 					e.preventDefault();
 					base.$el.swishCarousel("goTo", "next").swishCarousel(base.data.options.onAction);
 				});
 
-				base.data.$buttonLast.bind("click.swishCarousel", function (e) {
+				base.data.$buttonLast.on("click.swishCarousel", function (e) {
 					e.preventDefault();
 					base.$el.swishCarousel("goTo", "last").swishCarousel(base.data.options.onAction);
 				});
@@ -214,8 +228,8 @@
 
 
 				if (base.data.length < base.data.options.startPosition) {
-					$(base.data.options.buttonNext).remove();
-					$(base.data.options.buttonPrev).remove();
+					base.data.$buttonNext.remove();
+					base.data.$buttonPrev.remove();
 				}
 
 
@@ -237,7 +251,7 @@
 						case 'slide':
 							base.data.responsiveFunction = function () {
 								base.data.items.width(Math.floor(base.data.parent.width() * (base.data.options.responsiveWidth / 100)));
-								base.$el.width(base.data.length * base.data.items.width());
+								base.$el.width(base.data.items.length * base.data.items.width());
 
 								// Update positioning
 								base.$el.css({ left: -(base.data.currentItem * base.data.items.width()) });
@@ -251,20 +265,43 @@
 					}
 
 					// base.data.responsiveInterval = setInterval(base.data.responsiveFunction, 1);
+					base.data.responsiveFunction();
 					$(window).resize(base.data.responsiveFunction);
 				}
 
-				// Deal with the Firefox tab focus bug
-				if (base.data.options.focusFix) $(window).blur(function () { base.$el.swishCarousel("pause") }).focus(function () { base.$el.swishCarousel("play") });
+				if (base.data.options.useTouch) {
+					base.$el.on('touchstart.swishCarousel', function(e){
+						//console.log(e);
+						var touches = e.changedTouches;
+						//console.log(touches);
+					});
 
+					base.$el.on('touchmove.swishCarousel', function(e){
+						// console.log(e);
+						var touches = e.originalEvent.changedTouches[0].clientX;
+						console.log(touches);
+					});
+
+					base.$el.on('touchend.swishCarousel', function(e){
+						//console.log(e);
+						var touches = e.changedTouches;
+						//console.log(touches);
+					});
+				}
 
 				base.$el.data('swishCarousel', base.data);
 			});
+
+
+			// End of INIT function //
 		},
 		goTo: function (index) {
 			return this.each(function () {
 				var base = $.fn.swishCarousel.setupData(this);
 				var keyword = null;
+				var _currentItem;	// Helper item for holding the current item
+				var _lastItem;		// Helper item for holding the last item
+
 				if (typeof(index) === "string") {
 					keyword = index;
 					// Go to keyword (first/last/prev/next)
@@ -297,14 +334,23 @@
 				}
 
 				if (!isNaN(index)) {
+					_currentItem = base.data.items.eq(index); // Set the current helper object
+					_lastItem = base.data.items.eq(base.data.lastItem) // Set the last helper object
+
 					switch (base.data.options.animation) {
 						case 'slide':
-							if (Modernizr.csstransitions) base.$el.css({ left: -(index * base.data.items.outerWidth(true)) });
-							else base.$el.stop().animate({ left: -(index * base.data.items.outerWidth(true)) }, base.data.options.animSpeed);
+							if (Modernizr.csstransitions)
+								base.$el.css({ left: -(index * base.data.items.outerWidth(true)) });
+							else 
+								base.$el.stop().animate({ left: -(index * base.data.items.outerWidth(true)) }, base.data.options.animSpeed);
+							
 							break;
 						case 'fade':
-							if (Modernizr.csstransitions) base.data.items.eq(index).css({ opacity: 1, zIndex: 2 }).siblings().css({ opacity: 0, zIndex: 1 });
-							else base.data.items.eq(index).animate({ opacity: 1, zIndex: 2 }, base.data.options.animSpeed).siblings().animate({ opacity: 0, zIndex: 1 }, base.data.options.animSpeed);
+							if (Modernizr.csstransitions)
+								_currentItem.css({ opacity: 1, zIndex: 2 }).siblings().css({ opacity: 0, zIndex: 1 });
+							else
+								_currentItem.animate({ opacity: 1, zIndex: 2 }, base.data.options.animSpeed).siblings().animate({ opacity: 0, zIndex: 1 }, base.data.options.animSpeed);
+
 							break;
 						case 'loop':
 
@@ -331,38 +377,22 @@
 
 							break;
 						case 'sequence':
-							// Notes -
-							// When moving to a slide it must add the class animate-in
-							// When moving past a slide it must remove animate-in and add animate-out
-							// When moving back past a slide it must remove all classes and add generic transition styling
-							// Test index against base.data.currentItem to test relative position of current and previous slides
-							// if (index > base.data.currentItem) - moving forward
-							// if (index < base.data.currentItem) - moving backward
-							if (index === base.data.options.startPosition - 1)
-							{
-								console.log('first');
-								base.data.items.removeAttr('style').removeClass('animate-in animate-out');
-								base.data.items.eq(index).addClass();
-								// First item in the carousel
-							}
-							else if (index > base.data.currentItem)
-							{
-								// Carousel is moving forwards
-								console.log('backwards');
-							}
-							else if (index < base.data.currentItem)
-							{
-								// Carousel is moving backwards
-								console.log('forwards')
-							}
+							_lastItem.children().addClass('animate-out').removeClass('animate-in');
+							_currentItem.addClass('next-item').children().addClass('animate-in').removeClass('animate-out');
 
-							base.data.items.eq(index).addClass('animate-in').removeClass('animate-out');
-							base.data.items.eq(base.data.currentItem).addClass('animate-out').removeClass('animate-in');
 							
+							setTimeout(function(){
+								_currentItem.removeClass('next-item');	
+							}, base.data.options.sequenceDelay);
 						break;
 					}
-					base.data.items.eq(index).addClass('active').siblings().removeClass('active');
-					if (base.data.options.pager) base.data.$pagerItems.eq(index).addClass('pagerActive').siblings().removeClass('pagerActive');
+					
+					_currentItem.addClass('active').siblings().removeClass('active');
+
+					if (base.data.options.pager)
+						base.data.$pagerItems.eq(index).addClass('pagerActive').siblings().removeClass('pagerActive');
+
+					base.data.lastItem = base.data.currentItem;
 				} else {
 					$.error('swishCarousel | Trying to move to a non integer index.');
 				}
@@ -418,11 +448,6 @@
 				base.$el.swishCarousel("stop");
 				// Unbind all events //
 			});
-		},
-		test: function () {
-			return this.each(function () {
-				var base = $.fn.swishCarousel.setupData(this);
-			});
 		}
 	};
 
@@ -465,16 +490,14 @@
 		pollTimer: 500,
 		responsive: true,
 		responsiveWidth: 100,
+		sequenceDelay: 500,
 		startPosition: 1,
 		step: 1,
-		timer: false
+		timer: false,
+		useTouch: true
 	};
 
 	// public functions definition
-	$.fn.swishCarousel.test = function (foo) {
-		return this;
-		console.log("!");
-	};
 
 	$.fn.swishCarousel.setupData = function (el) {
 		var base = { el: el, $el: $(el) };
