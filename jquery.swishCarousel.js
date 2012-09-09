@@ -1,6 +1,5 @@
 /*||                                ||*/
 /*|| Swish Carousel					||*/
-/*|| Version: 1.0                   ||*/
 /*||                                ||*/
 
 /*
@@ -9,17 +8,8 @@
 
 /*|| Author: Thomas Stradling       ||*/
 
-/*
-	
+/*	
 	Dependent on Modernizr
-
-
-	Version: 1.0: 	Initial build
-	Version: 1.1:	Added looping functionality 
-					Based on code from
-					Stéphane Roucheray - http://sroucheray.org/	
-	Version: 1.2: 	Removed Underscore dependency
-					Fixed Fade z-index bug
 */
 
 (function ($) {
@@ -107,11 +97,12 @@
 						for (i = 0; i < base.data.loopInView; i++) {
 							base.$el.append(base.data.items.eq(i).clone());
 						}
+
 						base.data.items = base.$el.children();
 						base.data.length = base.data.items.length;
 
 						base.$el.width(base.data.length * base.data.items.outerWidth(true));
-						base.$el.css({ left: -((base.data.options.startPosition - 1) * base.data.items.outerWidth()) });
+						base.$el.css({ left: -((base.data.options.startPosition - 1) * base.data.items.outerWidth(true)) });
 						break;
 					case 'sequence':
 						// This is for just adding / removing classes
@@ -262,6 +253,15 @@
 								base.$el.height(base.data.items.height());
 							}
 							break;
+						case 'loop':
+							base.data.responsiveFunction = function () {
+								base.data.items.width(Math.floor(base.data.parent.width() * (base.data.options.responsiveWidth / 100)));
+								base.$el.width(base.data.items.length * base.data.items.width());
+
+								// Update positioning
+								base.$el.css({ left: -(base.data.currentItem * base.data.items.width()) });
+							}
+							break;
 					}
 
 					// base.data.responsiveInterval = setInterval(base.data.responsiveFunction, 1);
@@ -270,23 +270,32 @@
 				}
 
 				if (base.data.options.useTouch) {
-					base.$el.on('touchstart.swishCarousel', function(e){
-						//console.log(e);
-						var touches = e.changedTouches;
-						//console.log(touches);
-					});
+					var touchStart = {};
+					var touchCurrent = {};
+					var touchElStart;
 
-					base.$el.on('touchmove.swishCarousel', function(e){
-						// console.log(e);
-						var touches = e.originalEvent.changedTouches[0].clientX;
-						console.log(touches);
-					});
+					base.el.addEventListener('touchstart', function(ev){
+						base.$el.swishCarousel("stop"); // Prevent carousel from moving
 
-					base.$el.on('touchend.swishCarousel', function(e){
-						//console.log(e);
-						var touches = e.changedTouches;
-						//console.log(touches);
-					});
+						touchStart = ev.changedTouches[0];
+
+						touchElStart = base.el.style.left;
+					}, false);
+
+					base.el.addEventListener('touchmove', function(ev){
+						var touchNew = ev.changedTouches[0];
+					}, false);
+
+					base.el.addEventListener('touchend', function(ev){
+						if (ev.changedTouches[0].clientX - touchStart.clientX < 0)
+							base.$el.swishCarousel("goTo", "next").swishCarousel(base.data.options.onAction);
+					
+						else
+							base.$el.swishCarousel("goTo", "previous").swishCarousel(base.data.options.onAction);
+						
+							
+					}, false);
+
 				}
 
 				base.$el.data('swishCarousel', base.data);
@@ -353,24 +362,21 @@
 
 							break;
 						case 'loop':
-
-							switch (btnClicked) {
-								case "next":
-									// Click forwards to first item
-									if (index === (base.data.items.length - base.data.loopInView) + 1) {
-										index = base.data.options.startPosition - 1;
-										base.$el.stop().css({ left: -(index * base.data.items.outerWidth(true)) });
-										index = index + base.data.options.step;
-									}
-									break;
-								case "previous":
-									// Click backwards to previous item
-									if ((index + 1) === base.data.items.length) {
-										index = (index - base.data.loopInView) + 1;
-										base.$el.stop().css({ left: -(index * base.data.items.outerWidth(true)) });
-										index = index - base.data.options.startPosition;
-									}
-									break;
+							if (btnClicked === 'next' || (index > base.data.lastItem && base.data.lastItem !== base.data.options.startPosition - 1)) {
+								// Click forwards to first item
+								if (index === base.data.options.startPosition - 1) { // (base.data.items.length - base.data.loopInView) + 1
+									index = base.data.options.startPosition - 1;
+									base.$el.stop().css({ left: -(index * base.data.items.outerWidth(true)) });
+									index = index + base.data.options.step;
+								}
+							}
+							else if (btnClicked === 'previous' || index < base.data.lastItem) {
+								// Click backwards to previous item
+								if ((index + 1) === base.data.items.length) {
+									index = (index - base.data.loopInView) + 1;
+									base.$el.stop().css({ left: -(index * base.data.items.outerWidth(true)) });
+									index = index - base.data.options.startPosition;
+								}
 							}
 
 							base.$el.stop().animate({ left: -(index * base.data.items.outerWidth(true)) }, base.data.options.animSpeed);
