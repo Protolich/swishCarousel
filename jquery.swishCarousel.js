@@ -269,31 +269,79 @@
 					$(window).resize(base.data.responsiveFunction);
 				}
 
-				if (base.data.options.useTouch) {
-					var touchStart = {};
-					var touchCurrent = {};
+				if (base.data.options.useTouch && document.addEventListener) {
+					var deltaX;
+					var touchStartX;
+					var touchStartY;
 					var touchElStart;
+					var lastItem = false;
+					var firstItem = false;
+					var isScrolling = null;
+
+					var spring = 5;
+					var springAmount = (base.data.items.width() / 100) * spring;
 
 					base.el.addEventListener('touchstart', function(ev){
-						base.$el.swishCarousel("stop"); // Prevent carousel from moving
+						//ev.preventDefault();
 
-						touchStart = ev.changedTouches[0];
+						base.$el.addClass('carousel-touch').swishCarousel("stop"); // Prevent carousel from moving
+						
+						touchStartX = ev.touches.item(0).clientX;
+						touchStartY = ev.touches.item(0).clientY;
 
-						touchElStart = base.el.style.left;
+						deltaX = 0;
+
+						touchElStart = parseInt(base.el.style.left);
+
+						if(base.data.currentItem === 0)
+							firstItem = true;
+						else if (base.data.currentItem + 1 === base.data.items.length)
+							lastItem = true;
+
+						ev.stopPropagation();
 					}, false);
 
 					base.el.addEventListener('touchmove', function(ev){
+						//ev.preventDefault();
+
 						var touchNew = ev.changedTouches[0];
+						
+						deltaX = ev.touches[0].pageX - touchStartX;
+
+						if (isScrolling === null)
+							isScrolling = isScrolling || Math.abs(deltaX) < Math.abs(ev.touches[0].pageY - touchStartY);
+
+						if (!isScrolling) {
+							ev.preventDefault();
+							base.$el.css({ left: touchElStart + (touchNew.clientX - touchStartX) });
+						}
+							
+
+						ev.stopPropagation();
 					}, false);
 
 					base.el.addEventListener('touchend', function(ev){
-						if (ev.changedTouches[0].clientX - touchStart.clientX < 0)
-							base.$el.swishCarousel("goTo", "next").swishCarousel(base.data.options.onAction);
-					
-						else
-							base.$el.swishCarousel("goTo", "previous").swishCarousel(base.data.options.onAction);
-						
+						//ev.preventDefault();
+
+						var diff = ev.changedTouches[0].clientX - touchStartX;
+
+						if (!isScrolling) {
+							if (diff < -(springAmount) && !lastItem) {
+								base.$el.swishCarousel("goTo", "next").swishCarousel(base.data.options.onAction);
+							}
+							else if(diff > springAmount && !firstItem) {
+								base.$el.swishCarousel("goTo", "previous").swishCarousel(base.data.options.onAction);
+							} else {
+								base.$el.css({ left: touchElStart });
+							}
+						}
 							
+						firstItem = false;
+						lastItem = false;
+						isScrolling = null;
+						base.$el.removeClass('carousel-touch');
+
+						ev.stopPropagation();
 					}, false);
 
 				}
@@ -485,7 +533,7 @@
 		buttonStop: -1,
 		delay: 5000,
 		easing: "linear",
-		css3easing: "linear",
+		css3easing: "ease",
 		focusFix: true,
 		interrupt: true,
 		onAction: "stop",
