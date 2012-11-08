@@ -168,7 +168,7 @@
 				}
 
 				// If set to autostart begin the interval
-				if (base.data.options.autoStart) {
+				if (base.data.options.autoStart && base.data.items.length > base.data.options.step) {
 					if (base.data.options.timer)
 						$('.inner', base.data.$timer).stop().css({ width: 'auto' }).animate({ width: 0 }, base.data.options.delay, 'linear');
 
