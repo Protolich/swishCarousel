@@ -218,9 +218,9 @@
 
 
 
-				if (base.data.length < base.data.options.startPosition) {
-					base.data.$buttonNext.remove();
-					base.data.$buttonPrev.remove();
+				if (base.data.length <= base.data.options.startPosition || base.data.length <= base.data.options.step) {
+					base.data.$buttonNext.addClass('hidden');
+					base.data.$buttonPrev.addClass('hidden');
 				}
 
 
@@ -381,7 +381,17 @@
 							break;
 						case "previous":
 							base.data.currentItem = base.data.currentItem - base.data.options.step;
-							if (base.data.currentItem < base.data.options.startPosition - 1) base.data.currentItem = base.data.length - 1;
+							
+							if (base.data.currentItem < base.data.options.startPosition - base.data.options.step) {								
+								
+								if (base.data.length % base.data.options.step < base.data.options.step) // If there are not enough items to evenly fill all steps
+									base.data.currentItem = base.data.length - base.data.options.step; // Go to the nearest item that will fill the steps
+								
+								base.data.currentItem = base.data.length - base.data.options.step;
+							} else if (base.data.currentItem < base.data.options.startPosition) { // If going backwards beyond the start item
+								base.data.currentItem = base.data.options.startPosition - 1; // Reset to instead go to the start item
+							}
+								
 							index = base.data.currentItem;
 							btnClicked = "previous";
 							break;
@@ -454,6 +464,11 @@
 				// Update data object //
 				base.data.currentItem = index;
 				base.$el.data('swishCarousel', base.data);
+				
+				base = null;
+				keyword = null;
+				_currentItem = null;
+				_lastItem = null;
 			});
 		},
 		pause: function () {
