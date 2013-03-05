@@ -1,5 +1,13 @@
 # swishCarousel
 
+_Take heed!_
+
+Although the basic animations work correctly ( _most_ of the time ) alot of the functionality within this plugin is still in development and so things may not work as expected.
+
+One of these days I'll have a proper versioning system and stable releases and everything. Until then good luck if you need a hand get me on Twitter @protolich.
+
+Happy hacking or like whatever.
+
 ## Creating a carousel
 
 A carousel can be created using any element which has child elements.
