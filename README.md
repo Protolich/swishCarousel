@@ -30,3 +30,7 @@ You can expose an object for direct access to some of a carousels functions.
 Obviously you can only expose a carousel that has already been created.
 
 	var carousel = $('.carousel-list').swishCarousel('expose');
+	
+### Exposed functions
+
+* goTo(_index_) - move the carousel where _index_ is first, last, next, previous or an integer index.
