@@ -8,6 +8,11 @@ One of these days I'll have a proper versioning system and stable releases and e
 
 Happy hacking or like whatever.
 
+## Requirements
+
+jQuery - The newer the better. Cannot guarantee backward compatability. 1.9 seems stable enough.
+Modernizr - The newer the better. Developed with 2.6.2.
+
 ## Creating a carousel
 
 A carousel can be created using any element which has child elements.
@@ -54,3 +59,8 @@ Obviously you can only expose a carousel that has already been created.
 	carousel.goTo(2); // Go to the second item
 	
 	carousel.pause(); // Pause the carousel
+
+## Acknowledgements
+
+Using code from [Swipe](https://github.com/bradbirdsall/Swipe) by [Brad Birdsall](http://bradbirdsall.com/)
+
