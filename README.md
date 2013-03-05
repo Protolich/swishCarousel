@@ -33,8 +33,16 @@ Obviously you can only expose a carousel that has already been created.
 	
 ### Exposed functions
 
-* goTo( _index_ ) - move the carousel where _index_ is first, last, next, previous or an integer index.
+* goTo( _index_ ) - move the carousel where _index_ is 'first', 'last', 'next', 'previous' or an integer index.
 * pause - pause the carousel, maintaining current timer position.
 * play - resumes the carousel from either a paused or stopped state.
 * stop - stop the carousel, clears the timer.
 * destroy - restore the carousel to a pre-initialised state.
+
+### Examples
+
+	carousel.goTo('next'); // Go to the next item
+	
+	carousel.goTo(2); // Go to the second item
+	
+	carousel.pause(); // Pause the carousel
