@@ -80,6 +80,10 @@
 					base.data.currentItem = base.data.options.startPosition - 1;
 					base.data.lastItem = base.data.options.startPosition - 1;
 
+					// Create a backup of the original element
+					base.data.original = {};
+					base.data.original.$el = base.$el.clone();
+
 					// Setup button objects
 					function setupButton(btn) {
 						var _btn;
@@ -119,28 +123,72 @@
 						base.$el.height(base.data.items.height());
 						break;
 					case 'loop':
-						
-						// Add data-swish-index to allow tracking cloned items with the original
-						base.data.items.each(function (i, e) {
-							var _e = $(e);
-							_e.attr('data-swish-index', i);
-						});
+						if (base.data.items.length > 0)
+						{
+							// loopSet variable for when the original list is not big enough to fill the carousel
+							base.data.loopSets = 0;
+							base.data.loopOrigLength = base.data.items.length;
+							base.data.loopMinimum = 0;
 
-						// Test how many items are in view.
-						base.data.loopInView = Math.round(base.data.parent.width() / base.data.items.outerWidth(true));
-						// console.log("Items in view: " + base.data.loopInView);
+							// Add data-swish-index to allow tracking cloned items with the original
+							base.data.items.each(function (i, e) {
+								$(e).attr('data-swish-index', i);
+							});
 
-						// Clone the default in view items.
-						var i = 0;
-						for (i = 0; i < base.data.loopInView; i++) {
-							base.$el.append(base.data.items.eq(i).clone());
+							// Test how many items are in view
+							console.log(base.data.parent.width());
+							base.data.loopInView = Math.round(base.data.parent.width() / base.data.items.outerWidth(true));
+							// console.log("Items in view: " + base.data.loopInView);
+
+							
+							/*******/
+							if (base.data.items.length > base.data.loopInView)
+							{
+								// There are more than enough items to fill the view
+								// Loop through the amount of in view items
+								// Clone the default in view items
+								forEach(base.data.loopInView, function (i) {
+									base.$el.append(base.data.items.eq(i).clone().data('swish-loop-set', 1));
+								});
+
+
+								if (base.data.length < base.data.loopInView) { // If there are not enough items add more to ensure full loop
+									forEach(base.data.loopInView, function (i) {
+										base.$el.append(base.data.items.eq(i).clone().data('swish-loop-set', 2));
+									});
+									base.data.loopSets = 1;
+								}
+							}
+							else
+							{
+								base.data.loopMin = base.data.loopInView + base.data.items.length;
+								
+								var item = 0;
+								forEach(base.data.loopMin, function(index){
+									base.data.items.eq(item).clone().data('swish-loop-set', base.data.loopSets + 1).appendTo(base.$el);
+
+									if (item < base.data.items.length - 1)
+									{
+										item += 1;
+									}
+									else
+									{
+										item = 0;
+									}
+									
+								});
+							}
+							/*******/
+
+
+							base.data.items = base.$el.children();
+
+							base.data.lengthOrig = base.data.length; // Set a record of the number of original items
+							base.data.length = base.data.items.length;
+
+							base.$el.width(base.data.length * base.data.items.outerWidth(true));
+							base.$el.css({ left: -((base.data.options.startPosition - 1) * base.data.items.outerWidth(true)) });
 						}
-
-						base.data.items = base.$el.children();
-						base.data.length = base.data.items.length;
-
-						base.$el.width(base.data.length * base.data.items.outerWidth(true));
-						base.$el.css({ left: -((base.data.options.startPosition - 1) * base.data.items.outerWidth(true)) });
 						break;
 					case 'sequence':
 						// This is for just adding / removing classes
@@ -449,31 +497,42 @@
 							if (Modernizr.csstransitions)
 								base.$el.css({ left: -(index * base.data.items.outerWidth(true)) });
 							else 
-								base.$el.stop().animate({ left: -(index * base.data.items.outerWidth(true)) }, base.data.options.animSpeed);
+								base.$el.stop().animate({ left: -(index * base.data.items.outerWidth(true)) }, base.data.options.animSpeed, base.data.options.funcEndAnimation);
 							
 							break;
 						case 'fade':
 							if (Modernizr.csstransitions)
 								_currentItem.css({ opacity: 1, zIndex: 2 }).siblings().css({ opacity: 0, zIndex: 1 });
 							else
-								_currentItem.animate({ opacity: 1, zIndex: 2 }, base.data.options.animSpeed).siblings().animate({ opacity: 0, zIndex: 1 }, base.data.options.animSpeed);
+								_currentItem.animate({ opacity: 1, zIndex: 2 }, base.data.options.animSpeed).siblings().animate({ opacity: 0, zIndex: 1 }, base.data.options.animSpeed, base.data.options.funcEndAnimation);
 
 							break;
 						case 'loop':
 							if (btnClicked === 'next' || (index > base.data.lastItem && base.data.lastItem !== base.data.options.startPosition - 1)) {
 								// Click forwards to first item
-								if (index === base.data.options.startPosition - 1) { // (base.data.items.length - base.data.loopInView) + 1
+								// base.data.loopSets used to help offset the correct item when a second set of cloned items is used
+								if (index == (base.data.items.length - (base.data.lengthOrig * base.data.loopSets) - base.data.loopInView) + 1 + (base.data.loopSets * (base.data.loopInView - base.data.lengthOrig))) { // If the next item would be the second item of the loop items
+
 									index = base.data.options.startPosition - 1;
 									base.$el.stop().css({ left: -(index * base.data.items.outerWidth(true)) });
 									index = index + base.data.options.step;
+
+									_currentItem = base.data.items.eq(index);
 								}
 							}
 							else if (btnClicked === 'previous' || index < base.data.lastItem) {
 								// Click backwards to previous item
 								if ((index + 1) === base.data.items.length) {
-									index = (index - base.data.loopInView) + 1;
+
+									if (base.data.lengthOrig < base.data.loopInView)
+										index = index - base.data.lengthOrig * (1 + base.data.loopSets) + 1;
+									else
+										index = (index - base.data.loopInView) + 1;
+
 									base.$el.stop().css({ left: -(index * base.data.items.outerWidth(true)) });
 									index = index - base.data.options.startPosition;
+
+									_currentItem = base.data.items.eq(index);
 								}
 							}
 
@@ -592,6 +651,9 @@
 
 				// Stop interval
 				clearInterval(base.data.carouselTimer);
+
+				// Restore the original carousel element
+				base.$el.parent().html(base.data.original.$el);
 
 				// Set objects to null
 				base.$el.data('swishCarousel', null);
