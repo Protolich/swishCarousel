@@ -13,6 +13,40 @@
 */
 
 (function ($) {
+	// Helper functions
+	function forEach(count, doThis) {
+		// Helper function for looping through a set amount
+		for (var i = 0; i < count; i++) {
+			// Passes the current index to the function
+			doThis(i);
+		}
+	}
+
+	function forEachItemIn(array, doThis) {
+		// Helper function for looping through an array
+		for (var i = 0; i < array.length; i++) {
+			// Passes the current array item to the function
+			doThis(array[i]);
+		}
+	}
+
+	// Transition end event helper
+	var transEndEventNames = {
+		'WebkitTransition': 'webkitTransitionEnd',
+		'MozTransition': 'transitionend',
+		'OTransition': 'oTransitionEnd',
+		'msTransition': 'MSTransitionEnd',
+		'transition': 'transitionend'
+	},
+	transEndEventName = transEndEventNames[Modernizr.prefixed('transition')];
+
+	function addTransitionEnd(element, func)
+	{
+		if (element.addEventListener)
+		{
+			element.addEventListener(transEndEventName, func, false);
+		}
+	}
 
 	var methods = {
 		init: function (options) {
@@ -33,8 +67,12 @@
 					// Populate the base data object
 					// Make options available through the base object
 					base.data.options = opts;
+
 					// Select immediate parent. Typically the mask.
 					base.data.parent = base.$el.parent();
+					// Should the default parent be ovrridden?
+					base.data.parent = base.data.options.parentElement == "auto" ? base.$el.parent() : $(base.data.options.parentElement);
+
 					// Select the carousel items
 					base.data.items = base.$el.children();
 					// Initially set variables
@@ -129,6 +167,8 @@
 							base.data.items.css(transitionsCss);
 							break;
 					}
+
+					addTransitionEnd(base.el, base.data.options.funcEndAnimation);
 				}
 
 				// Setup the pager
@@ -437,7 +477,7 @@
 								}
 							}
 
-							base.$el.stop().animate({ left: -(index * base.data.items.outerWidth(true)) }, base.data.options.animSpeed);
+							base.$el.stop().animate({ left: -(index * base.data.items.outerWidth(true)) }, base.data.options.animSpeed, base.data.options.funcEndAnimation);
 
 							break;
 						case 'sequence':
@@ -511,11 +551,51 @@
 				base.data.pause = true;
 			});
 		},
+		expose: function() {
+			var base = $.fn.swishCarousel.setupData(this);
+
+			var SwishCarouselClass = function(base){
+				this.base = base;
+				this.goTo = function(index){
+					if (index)
+						this.base.$el.swishCarousel('goTo', index);
+				};
+				this.pause = function(){
+					this.base.$el.swishCarousel('pause');
+				};
+				this.play = function(){
+					this.base.$el.swishCarousel('play');
+				};
+				this.stop = function(){
+					this.base.$el.swishCarousel('stop');
+				};
+				this.destroy = function(){
+					this.base.$el.swishCarousel('destroy');
+				};
+			};
+
+			return new SwishCarouselClass(base);
+		},
 		destroy: function () {
 			return this.each(function () {
 				var base = $.fn.swishCarousel.setupData(this);
 				base.$el.swishCarousel("stop");
+				
 				// Unbind all events //
+				base.data.$buttonNext.off('click.swishCarousel');
+				base.data.$buttonPrev.off('click.swishCarousel');
+				base.data.$buttonFirst.off('click.swishCarousel');
+				base.data.$buttonLast.off('click.swishCarousel');
+				base.data.$buttonPlay.off('click.swishCarousel');
+				base.data.$buttonPause.off('click.swishCarousel');
+				base.data.$buttonStop.off('click.swishCarousel');
+
+				// Stop interval
+				clearInterval(base.data.carouselTimer);
+
+				// Set objects to null
+				base.$el.data('swishCarousel', null);
+				base = null;
 			});
 		}
 	};
@@ -550,11 +630,13 @@
 		easing: "linear",
 		css3easing: "ease",
 		focusFix: true,
+		funcEndAnimation: function(){},
 		interrupt: true,
 		onAction: "stop",
 		pager: false,
 		pagerAuto: false,
 		pagerElement: '.pager',
+		parentElement: 'auto',
 		poll: false,
 		pollTimer: 500,
 		responsive: true,
