@@ -11,6 +11,7 @@ Happy hacking or like whatever.
 ## Requirements
 
 jQuery - The newer the better. Cannot guarantee backward compatability. 1.9 seems stable enough.
+
 Modernizr - The newer the better. Developed with 2.6.2.
 
 ## Creating a carousel
