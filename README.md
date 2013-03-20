@@ -38,6 +38,230 @@ Call the carousel as you would any other jQuery plugin
 
 	$('.carousel-list').swishCarousel();
 
+## Options
+
+<table>
+	<thead>
+		<th>Name</th>
+		<th>Type</th>
+		<th>Options</th>
+		<th>Description</th>
+		<th>Default Value</th>
+	</thead>
+	<tr>
+		<td>animation</td>
+		<td>string</td>
+		<td>slide, fade</td>
+		<td></td>
+		<td>slide</td>
+	</tr>
+	<tr>
+		<td>animSpeed</td>
+		<td>int</td>
+		<td>(milliseconds)</td>
+		<td></td>
+		<td>300</td>
+	</tr>
+	<tr>
+		<td>autoSetup</td>
+		<td>boolean</td>
+		<td>ture, false</td>
+		<td></td>
+		<td>false</td>
+	</tr>
+	<tr>
+		<td>autoStart</td>
+		<td>boolean</td>
+		<td>true, false</td>
+		<td></td>
+		<td>true</td>
+	</tr>
+	<tr>
+		<td>buttons</td>
+		<td>boolean</td>
+		<td>true, false</td>
+		<td></td>
+		<td>true</td>
+	</tr>
+	<tr>
+		<td>buttonNext</td>
+		<td>string</td>
+		<td>"a.next"</td>
+		<td></td>
+		<td>null</td>
+	</tr>
+	<tr>
+		<td>buttonPrev</td>
+		<td>string</td>
+		<td>"a.prev"</td>
+		<td></td>
+		<td>null</td>
+	</tr>
+	<tr>
+		<td>buttonFirst</td>
+		<td>string</td>
+		<td>"a.first"</td>
+		<td></td>
+		<td>null</td>
+	</tr>
+	<tr>
+		<td>buttonLast</td>
+		<td>string</td>
+		<td>"a.last"</td>
+		<td></td>
+		<td>null</td>
+	</tr>
+	<tr>
+		<td>buttonPlay</td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td>null</td>
+	</tr>
+	<tr>
+		<td>buttonPause</td>
+		<td>string</td>
+		<td>"a.pause"</td>
+		<td></td>
+		<td>null</td>
+	</tr>
+	<tr>
+		<td>buttonStop</td>
+		<td>string</td>
+		<td>"a.stop"</td>
+		<td></td>
+		<td>null</td>
+	</tr>
+	<tr>
+		<td>delay</td>
+		<td>int</td>
+		<td>(milliseconds)</td>
+		<td></td>
+		<td>5000</td>
+	</tr>
+	<tr>
+		<td>easing</td>
+		<td>string</td>
+		<td>"linear"</td>
+		<td></td>
+		<td>"linear"</td>
+	</tr>
+	<tr>
+		<td>css3easing</td>
+		<td>string</td>
+		<td>"ease"</td>
+		<td></td>
+		<td>"ease"</td>
+	</tr>
+	<tr>
+		<td>focusFix</td>
+		<td>boolean</td>
+		<td>true, false</td>
+		<td></td>
+		<td>true</td>
+	</tr>
+	<tr>
+		<td>interrupt</td>
+		<td>boolean</td>
+		<td>true, false</td>
+		<td></td>
+		<td>true</td>
+	</tr>
+	<tr>
+		<td>onAction</td>
+		<td>string</td>
+		<td>"stop"</td>
+		<td></td>
+		<td>"stop"</td>
+	</tr>
+	<tr>
+		<td>pager</td>
+		<td>boolean</td>
+		<td>true, false</td>
+		<td></td>
+		<td>false</td>
+	</tr>
+	<tr>
+		<td>pagerAuto</td>
+		<td>boolean</td>
+		<td>true, false</td>
+		<td></td>
+		<td>false</td>
+	</tr>
+	<tr>
+		<td>pagerElement</td>
+		<td>string</td>
+		<td>".pager"</td>
+		<td></td>
+		<td>".pager"</td>
+	</tr>
+	<tr>
+		<td>poll</td>
+		<td>boolean</td>
+		<td>true, false</td>
+		<td></td>
+		<td>false</td>
+	</tr>
+	<tr>
+		<td>pollTimer</td>
+		<td>int</td>
+		<td>(milliseconds)</td>
+		<td></td>
+		<td>500</td>
+	</tr>
+	<tr>
+		<td>responsive</td>
+		<td>boolean</td>
+		<td>true, false</td>
+		<td></td>
+		<td>true</td>
+	</tr>
+	<tr>
+		<td>responsiveWidth</td>
+		<td>int</td>
+		<td>(percentage)</td>
+		<td></td>
+		<td>100</td>
+	</tr>
+	<tr>
+		<td>sequenceDelay</td>
+		<td>int</td>
+		<td>(milliseconds)</td>
+		<td></td>
+		<td>500</td>
+	</tr>
+	<tr>
+		<td>startPosition</td>
+		<td>int</td>
+		<td>1</td>
+		<td></td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>step</td>
+		<td>int</td>
+		<td>1</td>
+		<td>How many items to go through with next / prev function.</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>timer</td>
+		<td>boolean</td>
+		<td>true, false</td>
+		<td></td>
+		<td>false</td>
+	</tr>
+	<tr>
+		<td>useTouch</td>
+		<td>boolean</td>
+		<td>true, false</td>
+		<td></td>
+		<td>true</td>
+	</tr>
+</table>
+
+
+
 ## Exposing the carousel
 
 You can expose an object for direct access to some of a carousels functions.
