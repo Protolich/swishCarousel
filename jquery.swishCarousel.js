@@ -221,8 +221,10 @@
 
 				// Setup the pager
 				if (base.data.options.pager) {
-					if (typeof (base.data.options.pagerElement) === "function") base.data.$pager = base.data.options.pagerElement(base);
-					else if (base.data.options.pagerElement !== -1) base.data.$pager = $(base.data.options.pagerElement);
+					if (typeof (base.data.options.pagerElement) === "function")
+						base.data.$pager = base.data.options.pagerElement(base);
+					else if (base.data.options.pagerElement !== -1)
+						base.data.$pager = $(base.data.options.pagerElement);
 
 					// Create a pager if required
 					if (base.data.options.pagerAuto) {
@@ -238,17 +240,34 @@
 						// Create a pager item for each carousel item
 						base.data.items.each(function (i, e) { base.data.$pager.append('<li>' + (i + 1) + '</li>') });
 					}
-					base.data.$pagerItems = $("li", base.data.$pager);
-					base.data.$pagerItems.each(function (i, e) { $(e).data("pagerIndex", i) }).on('click.swishCarousel', function () {
-						base.$el.swishCarousel("goTo", $(this).data("pagerIndex")).swishCarousel(base.data.options.onAction);
+
+					base.data.$pager.each(function(){
+						var _pager = $(this);
+						var _pageritems = _pager.find('li');
+						
+						_pageritems
+							.each(function(i, e){
+								$(e).data("pagerIndex", i);
+							})
+							.on('click.swishCarousel', function(){
+								base.$el.swishCarousel("goTo", $(this).data("pagerIndex")).swishCarousel(base.data.options.onAction);
+							});
 					});
+					
+					base.data.$pagerItems = base.data.$pager.find("li");
+					
 					$('a', base.data.$pager).on('click.swishCarousel', function (e) {
 						e.preventDefault() 
 					});
 
 					// Create an update pager function?
-					base.data.$pagerItems.eq(base.data.options.startPosition - 1).addClass('pagerActive').siblings().removeClass('active');
+					base.data.$pagerItems
+						.eq(base.data.options.startPosition - 1)
+							.addClass('pagerActive')
+							.siblings()
+								.removeClass('active');
 				}
+
 				// Setup the progress bar
 				if (base.data.options.timer) {
 					base.data.$timer = $('<div class="timer"><div class="inner"></div></div>');
