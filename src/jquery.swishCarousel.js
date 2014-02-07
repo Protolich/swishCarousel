@@ -85,7 +85,7 @@
 					base.data.original.$el = base.$el.clone();
 
 					// Setup button objects
-					function setupButton(btn) {
+					var setupButton = function (btn) {
 						var _btn;
 						if (typeof (btn) === "function")
 							_btn = btn(base);
@@ -94,7 +94,7 @@
 						else
 							_btn = $(null); // Force function to return an empty jq object if unused.
 						return _btn;
-					}
+					};
 
 					base.data.$buttonNext = setupButton(base.data.options.buttonNext);
 					base.data.$buttonPrev = setupButton(base.data.options.buttonPrev);
@@ -203,7 +203,7 @@
 						'-moz-transition': t,
 						'-o-transition': t,
 						'transition': t
-					}
+					};
 					switch (base.data.options.animation) {
 						case 'slide':
 							base.$el.css(transitionsCss);
@@ -235,7 +235,9 @@
 							base.data.$pager = $('ol', base.data.$pager);
 						}
 						// Create a pager item for each carousel item
-						base.data.items.each(function (i, e) { base.data.$pager.append('<li>' + (i + 1) + '</li>') });
+						base.data.items.each(function (i, e) { 
+							base.data.$pager.append('<li>' + (i + 1) + '</li>');
+						});
 					}
 
 					base.data.$pager.each(function(){
@@ -254,7 +256,7 @@
 					base.data.$pagerItems = base.data.$pager.find("li");
 
 					$('a', base.data.$pager).on('click.swishCarousel', function (e) {
-						e.preventDefault()
+						e.preventDefault();
 					});
 
 					// Create an update pager function?
@@ -339,7 +341,7 @@
 				if (base.data.options.responsive) {
 					// Auto set width / height / whatev
 
-					base.data.responsiveFunction = function () { }
+					base.data.responsiveFunction = function () { };
 
 					switch (base.data.options.animation) {
 						case 'slide':
@@ -347,13 +349,15 @@
 								updateSlideWidths(base.data.options.responsiveWidth, base);
 
 								// Update positioning
-								base.$el.css({ left: -(base.data.currentItem * base.data.items.outerWidth(true)) });
-							}
+								base.$el.css({
+									left: -(base.data.currentItem * base.data.items.outerWidth(true))
+								});
+							};
 							break;
 						case 'fade':
 							base.data.responsiveFunction = function () {
 								base.$el.height(base.data.items.height());
-							}
+							};
 							break;
 						case 'loop':
 							base.data.responsiveFunction = function () {
@@ -361,8 +365,10 @@
 								base.$el.width(base.data.items.length * base.data.items.width());
 
 								// Update positioning
-								base.$el.css({ left: -(base.data.currentItem * base.data.items.width()) });
-							}
+								base.$el.css({
+									left: -(base.data.currentItem * base.data.items.width())
+								});
+							};
 							break;
 					}
 
@@ -393,7 +399,7 @@
 
 						deltaX = 0;
 
-						touchElStart = parseInt(base.el.style.left);
+						touchElStart = parseInt(base.el.style.left, 10);
 
 						if(base.data.currentItem === 0)
 							firstItem = true;
@@ -460,12 +466,12 @@
 				var keyword = null;
 				var _currentItem;	// Helper item for holding the current item
 				var _lastItem;		// Helper item for holding the last item
+				var btnClicked = "none";
 
 				if (typeof(index) === "string") {
 					keyword = index;
 					// Go to keyword (first/last/prev/next)
 					// Store which button was clicked
-					var btnClicked = "none";
 
 					switch (index) {
 						case "first":
@@ -504,7 +510,7 @@
 
 				if (!isNaN(index)) {
 					_currentItem = base.data.items.eq(index); // Set the current helper object
-					_lastItem = base.data.items.eq(base.data.lastItem) // Set the last helper object
+					_lastItem = base.data.items.eq(base.data.lastItem); // Set the last helper object
 
 					switch (base.data.options.animation) {
 						case 'slide':
@@ -741,7 +747,7 @@
 			width: itemWidth
 		});
 		base.$el.width(innerWidth+'%');
-	}
+	};
 
 	// private functions definition
 	function goTo(base, index) {
