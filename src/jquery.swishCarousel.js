@@ -49,6 +49,9 @@
 		}
 	}
 
+	// Transform helper
+	var transformName = Modernizr.prefixed('transform');
+
 	var methods = {
 		init: function (options) {
 			var opts = $.extend({}, $.fn.swishCarousel.defaults, options);
@@ -119,8 +122,20 @@
 						updateSlideWidths(base.data.options.responsiveWidth, base);
 						break;
 					case 'fade':
-						base.data.items.css({ opacity: 0, position: 'absolute', top: 0, left: 0, zIndex: 1 }).eq(base.data.currentItem).css({ opacity: 1, zIndex: 2 });
+						base.data.items
+							.css({ 
+								opacity: 0, 
+								position: 'absolute', 
+								top: 0, 
+								left: 0, 
+								zIndex: 1 
+							})
+							.eq(base.data.currentItem)
+								.css({ opacity: 1, zIndex: 2 });
+
 						base.$el.height(base.data.items.height());
+
+
 						break;
 					case 'loop':
 						if (base.data.items.length > 0)
@@ -515,10 +530,19 @@
 
 					switch (base.data.options.animation) {
 						case 'slide':
-							if (Modernizr.csstransitions)
-								base.$el.css({ left: -(index * base.data.items.outerWidth(true)) });
-							else
-								base.$el.stop().animate({ left: -(index * base.data.items.outerWidth(true)) }, base.data.options.animSpeed, base.data.options.funcEndAnimation);
+							if (Modernizr.csstransitions) {
+								if (Modernizr.csstransforms) {
+									base.el.style[transformName] = 'translateX('+(-(index * base.data.items.outerWidth(true)))+'px)';
+								} else {
+									base.el.style.left = -(index * base.data.items.outerWidth(true)); // Are there any browsers supporting transitions without supporting basic transforms?
+								}
+							}
+							else {
+								base.$el.stop().animate({ 
+									left: -(index * base.data.items.outerWidth(true)) 
+								}, 
+								base.data.options.animSpeed, base.data.options.funcEndAnimation);
+							}
 
 							break;
 						case 'fade':
@@ -744,8 +768,6 @@
 		'breakpoint';
 		var itemWidth = (1 / base.data.items.length * 100) + '%', // Calculate the width of each item
 			innerWidth = (base.data.items.length / itemsToShow) * 100; // Calculate the percentage with of the parent element based on showing 3 items at a time
-
-		console.log(itemWidth);
 
 		base.data.items.css({
 			width: itemWidth
