@@ -14,6 +14,10 @@ module.exports = function(grunt) {
 		jshint: {
 			src: ['src/jquery.swishCarousel.js'],
 			build: ['build/jquery.swishCarousel.min.js']
+		},
+		watch: {
+			files: ['src/jquery.swishCarousel.js'],
+			tasks: ['default']
 		}
 	});
 
@@ -21,6 +25,8 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	// Load jshint
 	grunt.loadNpmTasks('grunt-contrib-jshint');
+	// Load watcch
+	grunt.loadNpmTasks('grunt-contrib-watch');
 
 	grunt.registerTask('default', ['jshint:src','uglify']);
 };
