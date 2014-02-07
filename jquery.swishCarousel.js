@@ -8,7 +8,7 @@
 
 /*|| Author: Thomas Stradling       ||*/
 
-/*	
+/*
 	Dependent on Modernizr
 */
 
@@ -115,8 +115,7 @@
 				// Setup animations
 				switch (base.data.options.animation) {
 					case 'slide':
-						base.$el.width(base.data.length * base.data.items.outerWidth(true));
-						base.$el.css({ left: -((base.data.options.startPosition - 1) * base.data.items.outerWidth(true)) });
+						updateSlideWidths(base.data.options.responsiveWidth, base);
 						break;
 					case 'fade':
 						base.data.items.css({ opacity: 0, position: 'absolute', top: 0, left: 0, zIndex: 1 }).eq(base.data.currentItem).css({ opacity: 1, zIndex: 2 });
@@ -136,11 +135,9 @@
 							});
 
 							// Test how many items are in view
-							console.log(base.data.parent.width());
 							base.data.loopInView = Math.round(base.data.parent.width() / base.data.items.outerWidth(true));
-							// console.log("Items in view: " + base.data.loopInView);
 
-							
+
 							/*******/
 							if (base.data.items.length > base.data.loopInView)
 							{
@@ -162,7 +159,7 @@
 							else
 							{
 								base.data.loopMin = base.data.loopInView + base.data.items.length;
-								
+
 								var item = 0;
 								forEach(base.data.loopMin, function(index){
 									base.data.items.eq(item).clone().data('swish-loop-set', base.data.loopSets + 1).appendTo(base.$el);
@@ -175,7 +172,7 @@
 									{
 										item = 0;
 									}
-									
+
 								});
 							}
 							/*******/
@@ -244,7 +241,7 @@
 					base.data.$pager.each(function(){
 						var _pager = $(this);
 						var _pageritems = _pager.find('li');
-						
+
 						_pageritems
 							.each(function(i, e){
 								$(e).data("pagerIndex", i);
@@ -253,11 +250,11 @@
 								base.$el.swishCarousel("goTo", $(this).data("pagerIndex")).swishCarousel(base.data.options.onAction);
 							});
 					});
-					
+
 					base.data.$pagerItems = base.data.$pager.find("li");
-					
+
 					$('a', base.data.$pager).on('click.swishCarousel', function (e) {
-						e.preventDefault() 
+						e.preventDefault()
 					});
 
 					// Create an update pager function?
@@ -281,10 +278,10 @@
 
 					base.data.carouselTimer = setInterval(function () {
 						base.$el.swishCarousel("goTo", "next");
-						
+
 						if (base.data.options.timer)
 							$('.inner', base.data.$timer).stop().css({ width: 'auto' }).animate({ width: 0 }, base.data.options.delay, 'linear');
-					
+
 					}, base.data.options.delay);
 				}
 
@@ -292,27 +289,27 @@
 					e.preventDefault();
 					base.$el.swishCarousel("pause");
 				});
-				
+
 				base.data.$buttonPlay.on("click.swishCarousel", function (e) {
 					e.preventDefault();
-					base.$el.swishCarousel("play"); 
+					base.$el.swishCarousel("play");
 				});
-				
-				base.data.$buttonStop.on("click.swishCarousel", function (e) { 
+
+				base.data.$buttonStop.on("click.swishCarousel", function (e) {
 					e.preventDefault();
-					base.$el.swishCarousel("stop"); 
+					base.$el.swishCarousel("stop");
 				});
-				
+
 				base.data.$buttonFirst.on("click.swishCarousel", function (e) {
 					e.preventDefault();
 					base.$el.swishCarousel("goTo", "first").swishCarousel(base.data.options.onAction);
 				});
-				
+
 				base.data.$buttonPrev.on("click.swishCarousel", function (e) {
 					e.preventDefault();
 					base.$el.swishCarousel("goTo", "previous").swishCarousel(base.data.options.onAction);
 				});
-				
+
 				base.data.$buttonNext.on("click.swishCarousel", function (e) {
 					e.preventDefault();
 					base.$el.swishCarousel("goTo", "next").swishCarousel(base.data.options.onAction);
@@ -341,18 +338,16 @@
 
 				if (base.data.options.responsive) {
 					// Auto set width / height / whatev
-					base.data.items.width(Math.floor(base.data.parent.width() * (base.data.options.responsiveWidth / 100)));
 
 					base.data.responsiveFunction = function () { }
 
 					switch (base.data.options.animation) {
 						case 'slide':
 							base.data.responsiveFunction = function () {
-								base.data.items.width(Math.floor(base.data.parent.width() * (base.data.options.responsiveWidth / 100)));
-								base.$el.width(base.data.items.length * base.data.items.width());
+								updateSlideWidths(base.data.options.responsiveWidth, base);
 
 								// Update positioning
-								base.$el.css({ left: -(base.data.currentItem * base.data.items.width()) });
+								base.$el.css({ left: -(base.data.currentItem * base.data.items.outerWidth(true)) });
 							}
 							break;
 						case 'fade':
@@ -392,7 +387,7 @@
 						//ev.preventDefault();
 
 						base.$el.addClass('carousel-touch').swishCarousel("stop"); // Prevent carousel from moving
-						
+
 						touchStartX = ev.touches.item(0).clientX;
 						touchStartY = ev.touches.item(0).clientY;
 
@@ -412,7 +407,7 @@
 						//ev.preventDefault();
 
 						var touchNew = ev.changedTouches[0];
-						
+
 						deltaX = ev.touches[0].pageX - touchStartX;
 
 						if (isScrolling === null)
@@ -422,7 +417,7 @@
 							ev.preventDefault();
 							base.$el.css({ left: touchElStart + (touchNew.clientX - touchStartX) });
 						}
-							
+
 
 						ev.stopPropagation();
 					}, false);
@@ -442,7 +437,7 @@
 								base.$el.css({ left: touchElStart });
 							}
 						}
-							
+
 						firstItem = false;
 						lastItem = false;
 						isScrolling = null;
@@ -488,17 +483,17 @@
 							break;
 						case "previous":
 							base.data.currentItem = base.data.currentItem - base.data.options.step;
-							
-							if (base.data.currentItem < base.data.options.startPosition - base.data.options.step) {								
-								
+
+							if (base.data.currentItem < base.data.options.startPosition - base.data.options.step) {
+
 								if (base.data.length % base.data.options.step < base.data.options.step) // If there are not enough items to evenly fill all steps
 									base.data.currentItem = base.data.length - base.data.options.step; // Go to the nearest item that will fill the steps
-								
+
 								base.data.currentItem = base.data.length - base.data.options.step;
 							} else if (base.data.currentItem < base.data.options.startPosition) { // If going backwards beyond the start item
 								base.data.currentItem = base.data.options.startPosition - 1; // Reset to instead go to the start item
 							}
-								
+
 							index = base.data.currentItem;
 							btnClicked = "previous";
 							break;
@@ -515,9 +510,9 @@
 						case 'slide':
 							if (Modernizr.csstransitions)
 								base.$el.css({ left: -(index * base.data.items.outerWidth(true)) });
-							else 
+							else
 								base.$el.stop().animate({ left: -(index * base.data.items.outerWidth(true)) }, base.data.options.animSpeed, base.data.options.funcEndAnimation);
-							
+
 							break;
 						case 'fade':
 							if (Modernizr.csstransitions)
@@ -562,13 +557,13 @@
 							_lastItem.children().addClass('animate-out').removeClass('animate-in');
 							_currentItem.addClass('next-item').children().addClass('animate-in').removeClass('animate-out');
 
-							
+
 							setTimeout(function(){
-								_currentItem.removeClass('next-item');	
+								_currentItem.removeClass('next-item');
 							}, base.data.options.sequenceDelay);
 						break;
 					}
-					
+
 					_currentItem.addClass('active').siblings().removeClass('active');
 
 					if (base.data.options.pager)
@@ -582,7 +577,7 @@
 				// Update data object //
 				base.data.currentItem = index;
 				base.$el.data('swishCarousel', base.data);
-				
+
 				base = null;
 				keyword = null;
 				_currentItem = null;
@@ -658,7 +653,7 @@
 			return this.each(function () {
 				var base = $.fn.swishCarousel.setupData(this);
 				base.$el.swishCarousel("stop");
-				
+
 				// Unbind all events //
 				base.data.$buttonNext.off('click.swishCarousel');
 				base.data.$buttonPrev.off('click.swishCarousel');
@@ -738,6 +733,16 @@
 		return base;
 	};
 
+	var updateSlideWidths = function(itemsToShow, base){
+		var itemWidth = (1 / base.data.items.length * 100) + '%', // Calculate the width of each item
+			innerWidth = (base.data.items.length / itemsToShow) * 100; // Calculate the percentage with of the parent element based on showing 3 items at a time
+
+		base.data.items.css({
+			width: itemWidth
+		});
+		base.$el.width(innerWidth+'%');
+	}
+
 	// private functions definition
 	function goTo(base, index) {
 		// Make sure data is up to date //
@@ -747,7 +752,4 @@
 		// Pull in any updated data //
 		return base.data;
 	}
-
-
-
 })(jQuery);
