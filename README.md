@@ -219,9 +219,9 @@ Call the carousel as you would any other jQuery plugin
 	<tr>
 		<td>responsiveWidth</td>
 		<td>int</td>
-		<td>(percentage)</td>
 		<td></td>
-		<td>100</td>
+		<td>How many items to show at once</td>
+		<td>1</td>
 	</tr>
 	<tr>
 		<td>sequenceDelay</td>
