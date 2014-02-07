@@ -1,7 +1,10 @@
 var _log;
 (function(){
 	_log = $('#log');
-	$('.carousel').swishCarousel({ animation: 'slide' });
+	$('.carousel').swishCarousel({
+		animation: 'slide',
+		timer: true
+	});
 })();
 
 function logInfo(text) {

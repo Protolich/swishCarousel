@@ -94,20 +94,42 @@ textarea {
    ========================================================================== */
 
 .wrap { margin: 0 auto; width: 700px; }
-.carousel-mask { background: #EEE; overflow: hidden; position: relative; width: 100%; }
+.carousel-mask { 
+    background: #EEE; 
+    overflow: hidden; 
+    position: relative; 
+    width: 100%;
+    z-index: 10;
+}
 .carousel-touch { cursor: pointer;
     -webkit-transition: none !important;
     -moz-transition:    none !important;
     transition:         none !important;
 }
 .carousel { list-style: none; margin: 0; padding: 0; position: relative; }
-.carousel li { float: left; height: 200px; }
-.carousel li:nth-child(4n+1) { background: #F9F; }
-.carousel li:nth-child(4n+2) { background: #FF9; }
-.carousel li:nth-child(4n+3) { background: #9FF; }
-.carousel li:nth-child(4n+4) { background: #C9F; }
+.carousel li { 
+    background-size: cover;
+    float: left; 
+    height: 400px; 
+}
+.carousel li:nth-child(4n+1) { background: #F9F url(../img/sw-1.png) no-repeat center center; }
+.carousel li:nth-child(4n+2) { background: #FF9 url(../img/sw-2.jpg) no-repeat center center; }
+.carousel li:nth-child(4n+3) { background: #9FF url(../img/sw-3.jpg) no-repeat center center; }
+.carousel li:nth-child(4n+4) { background: #C9F url(../img/sw-4.png) no-repeat center center; }
 /*.carousel li:nth-child(5) { background: #F9C; }*/
 
+.timer {
+    height: 5px;
+    left: 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    z-index: 20;
+}
+.timer .inner {
+    background: rgba(255,255,255,.5);
+    height: 5px;
+}
 
 
 
