@@ -1,18 +1,19 @@
 /*||                                ||*/
 /*|| Swish Carousel					||*/
 /*||                                ||*/
-
 /*
   <(^,^)>
 */
-
 /*|| Author: Thomas Stradling       ||*/
-
 /*
 	Dependent on Modernizr
 */
 
 (function ($) {
+	var useAddEventListener = false;
+	if (window.addEventListener) {
+		useAddEventListener = true;
+	}
 	// Helper functions
 	function forEach(count, doThis) {
 		// Helper function for looping through a set amount
@@ -42,7 +43,7 @@
 
 	function addTransitionEnd(element, func)
 	{
-		if (element.addEventListener)
+		if (useAddEventListener)
 		{
 			element.addEventListener(transEndEventName, func, false);
 		}
@@ -341,7 +342,7 @@
 				if (base.data.options.responsive) {
 					// Auto set width / height / whatev
 
-					base.data.responsiveFunction = function () { };
+					base.data.responsiveFunction = function () {};
 
 					switch (base.data.options.animation) {
 						case 'slide':
@@ -377,7 +378,7 @@
 					$(window).resize(base.data.responsiveFunction);
 				}
 
-				if (base.data.options.useTouch && document.addEventListener) {
+				if (base.data.options.useTouch && useAddEventListener) {
 					var deltaX;
 					var touchStartX;
 					var touchStartY;
@@ -689,7 +690,7 @@
 		} else if (typeof method === 'object' || !method) {
 			return methods.init.apply(this, arguments);
 		} else {
-			$.error('Method ' + method + ' does not exist on jQuery.tooltip');
+			$.error('Method ' + method + ' does not exist on jQuery.swishCarousel');
 		}
 
 	};
@@ -722,7 +723,7 @@
 		poll: false,
 		pollTimer: 500,
 		responsive: true,
-		responsiveWidth: 100,
+		responsiveWidth: 1,
 		sequenceDelay: 500,
 		startPosition: 1,
 		step: 1,
@@ -740,8 +741,11 @@
 	};
 
 	var updateSlideWidths = function(itemsToShow, base){
+		'breakpoint';
 		var itemWidth = (1 / base.data.items.length * 100) + '%', // Calculate the width of each item
 			innerWidth = (base.data.items.length / itemsToShow) * 100; // Calculate the percentage with of the parent element based on showing 3 items at a time
+
+		console.log(itemWidth);
 
 		base.data.items.css({
 			width: itemWidth
