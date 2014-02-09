@@ -19,6 +19,7 @@ textarea {
 }
 
 body {
+    background: #333;
     font-size: 1em;
     line-height: 1.4;
 }
@@ -110,7 +111,7 @@ textarea {
 .carousel li { 
     background-size: cover;
     float: left; 
-    height: 400px; 
+    height: 500px; 
 }
 .carousel li:nth-child(4n+1) { background: #F9F url(../img/sw-1.png) no-repeat center center; }
 .carousel li:nth-child(4n+2) { background: #FF9 url(../img/sw-2.jpg) no-repeat center center; }
