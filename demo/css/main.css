@@ -95,10 +95,10 @@ textarea {
    ========================================================================== */
 
 .wrap { margin: 0 auto; width: 700px; }
-.carousel-mask { 
-    background: #EEE; 
-    overflow: hidden; 
-    position: relative; 
+.carousel-mask {
+    background: #EEE;
+    overflow: hidden;
+    position: relative;
     width: 100%;
     z-index: 10;
 }
@@ -108,10 +108,10 @@ textarea {
     transition:         none !important;
 }
 .carousel { list-style: none; margin: 0; padding: 0; position: relative; }
-.carousel li { 
+.carousel li {
     background-size: cover;
-    float: left; 
-    height: 500px; 
+    float: left;
+    height: 500px;
 }
 .carousel li:nth-child(4n+1) { background: #F9F url(../img/sw-1.png) no-repeat center center; }
 .carousel li:nth-child(4n+2) { background: #FF9 url(../img/sw-2.jpg) no-repeat center center; }

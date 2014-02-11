@@ -1,12 +1,11 @@
-var _log;
 (function(){
-	_log = $('#log');
-	$('.carousel').swishCarousel({
+	$('#carousel-1 .carousel').swishCarousel({
 		animation: 'slide',
 		timer: true
 	});
-})();
 
-function logInfo(text) {
-	_log.text(_log.text() + "\n " + text);
-}
+	$('#carousel-2 .carousel').swishCarousel({
+		animation: 'loop',
+		timer: true
+	});
+})();
