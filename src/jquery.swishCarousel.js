@@ -108,8 +108,7 @@
 					base.data.$buttonPause = setupButton(base.data.options.buttonPause);
 					base.data.$buttonStop = setupButton(base.data.options.buttonStop);
 
-
-					//
+					// Set the pause status
 					base.data.pause = false;
 					//
 					base.$el.data('swishCarousel', base.data);
@@ -123,12 +122,12 @@
 						break;
 					case 'fade':
 						base.data.items
-							.css({ 
-								opacity: 0, 
-								position: 'absolute', 
-								top: 0, 
-								left: 0, 
-								zIndex: 1 
+							.css({
+								opacity: 0,
+								position: 'absolute',
+								top: 0,
+								left: 0,
+								zIndex: 1
 							})
 							.eq(base.data.currentItem)
 								.css({ opacity: 1, zIndex: 2 });
@@ -251,7 +250,7 @@
 							base.data.$pager = $('ol', base.data.$pager);
 						}
 						// Create a pager item for each carousel item
-						base.data.items.each(function (i, e) { 
+						base.data.items.each(function (i, e) {
 							base.data.$pager.append('<li>' + (i + 1) + '</li>');
 						});
 					}
@@ -538,18 +537,30 @@
 								}
 							}
 							else {
-								base.$el.stop().animate({ 
-									left: -(index * base.data.items.outerWidth(true)) 
-								}, 
-								base.data.options.animSpeed, base.data.options.funcEndAnimation);
+								base.$el.stop().animate({
+									left: -(index * base.data.items.outerWidth(true))
+								},
+								base.data.options.animSpeed,
+								base.data.options.funcEndAnimation);
 							}
 
 							break;
 						case 'fade':
-							if (Modernizr.csstransitions)
-								_currentItem.css({ opacity: 1, zIndex: 2 }).siblings().css({ opacity: 0, zIndex: 1 });
-							else
+							if (Modernizr.csstransitions) {
+								_currentItem
+									.css({
+										opacity: 1,
+										zIndex: 2
+									})
+									.siblings()
+										.css({
+											opacity: 0,
+											zIndex: 1
+										});
+							}
+							else {
 								_currentItem.animate({ opacity: 1, zIndex: 2 }, base.data.options.animSpeed).siblings().animate({ opacity: 0, zIndex: 1 }, base.data.options.animSpeed, base.data.options.funcEndAnimation);
+							}
 
 							break;
 						case 'loop':
