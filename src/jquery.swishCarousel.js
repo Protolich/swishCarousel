@@ -79,6 +79,7 @@
 
 					// Select the carousel items
 					base.data.items = base.$el.children();
+					base.data.items.addClass('carousel-item');
 					// Initially set variables
 					base.data.length = base.data.items.length;
 					base.data.currentItem = base.data.options.startPosition - 1;
@@ -137,6 +138,10 @@
 
 						break;
 					case 'loop':
+						updateSlideWidths(base.data.options.responsiveWidth, base);
+
+						// 
+
 						if (base.data.items.length > 0)
 						{
 							// loopSet variable for when the original list is not big enough to fill the carousel
@@ -152,8 +157,6 @@
 							// Test how many items are in view
 							base.data.loopInView = Math.round(base.data.parent.width() / base.data.items.outerWidth(true));
 
-
-							/*******/
 							if (base.data.items.length > base.data.loopInView)
 							{
 								// There are more than enough items to fill the view
@@ -190,8 +193,6 @@
 
 								});
 							}
-							/*******/
-
 
 							base.data.items = base.$el.children();
 
@@ -199,7 +200,12 @@
 							base.data.length = base.data.items.length;
 
 							base.$el.width(base.data.length * base.data.items.outerWidth(true));
-							base.$el.css({ left: -((base.data.options.startPosition - 1) * base.data.items.outerWidth(true)) });
+
+							if (Modernizr.csstransforms) {
+								base.el.style[transformName] = 'translateX('+(-((base.data.options.startPosition - 1) * base.data.items.outerWidth(true)))+'px)';
+							} else {
+								base.$el.css({ left: -((base.data.options.startPosition - 1) * base.data.items.outerWidth(true)) });
+							}
 						}
 						break;
 					case 'sequence':
@@ -212,22 +218,7 @@
 				base.$el.addClass('swishCarousel');
 
 				if (Modernizr.csstransitions) {
-					var t = "all " + (base.data.options.animSpeed / 1000) + "s " + base.data.options.css3easing,
-					transitionsCss = {
-						'-webkit-transition': t,
-						'-moz-transition': t,
-						'-o-transition': t,
-						'transition': t
-					};
-					switch (base.data.options.animation) {
-						case 'slide':
-							base.$el.css(transitionsCss);
-							break;
-						case 'fade':
-							base.data.items.css(transitionsCss);
-							break;
-					}
-
+					base.$el.addClass('transition-'+base.data.options.animation);
 					addTransitionEnd(base.el, base.data.options.funcEndAnimation);
 				}
 
@@ -269,10 +260,10 @@
 					});
 
 					base.data.$pagerItems = base.data.$pager.find("li");
-
-					$('a', base.data.$pager).on('click.swishCarousel', function (e) {
-						e.preventDefault();
-					});
+					base.data.$pager.find('a')
+						.on('click.swishCarousel', function (e) {
+							e.preventDefault();
+						});
 
 					// Create an update pager function?
 					base.data.$pagerItems
@@ -376,8 +367,11 @@
 							break;
 						case 'loop':
 							base.data.responsiveFunction = function () {
-								base.data.items.width(Math.floor(base.data.parent.width() * (base.data.options.responsiveWidth / 100)));
-								base.$el.width(base.data.items.length * base.data.items.width());
+								//base.data.items.width(Math.floor(base.data.parent.width() * (base.data.options.responsiveWidth / 100)));
+								//base.$el.width(base.data.items.length * base.data.items.width());
+
+								updateSlideWidths(base.data.options.responsiveWidth, base);
+
 
 								// Update positioning
 								base.$el.css({
@@ -570,7 +564,11 @@
 								if (index == (base.data.items.length - (base.data.lengthOrig * base.data.loopSets) - base.data.loopInView) + 1 + (base.data.loopSets * (base.data.loopInView - base.data.lengthOrig))) { // If the next item would be the second item of the loop items
 
 									index = base.data.options.startPosition - 1;
-									base.$el.stop().css({ left: -(index * base.data.items.outerWidth(true)) });
+
+									base.$el.removeClass('transition-'+base.data.options.animation);
+									base.el.style[transformName] = 'translateX('+(-(index * base.data.items.outerWidth(true)))+'px)';
+									//base.$el.addClass('transition-'+base.data.options.animation);
+
 									index = index + base.data.options.step;
 
 									_currentItem = base.data.items.eq(index);
@@ -585,14 +583,17 @@
 									else
 										index = (index - base.data.loopInView) + 1;
 
-									base.$el.stop().css({ left: -(index * base.data.items.outerWidth(true)) });
+									base.$el.removeClass('transition-'+base.data.options.animation);
+									base.el.style[transformName] = 'translateX('+(-(index * base.data.items.outerWidth(true)))+'px)';
+									//base.$el.addClass('transition-'+base.data.options.animation);
+
 									index = index - base.data.options.startPosition;
 
 									_currentItem = base.data.items.eq(index);
 								}
 							}
 
-							base.$el.stop().animate({ left: -(index * base.data.items.outerWidth(true)) }, base.data.options.animSpeed, base.data.options.funcEndAnimation);
+							base.el.style[transformName] = 'translateX('+(-(index * base.data.items.outerWidth(true)))+'px)';
 
 							break;
 						case 'sequence':
